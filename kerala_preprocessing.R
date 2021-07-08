@@ -12,7 +12,7 @@ sum(data["Confirmed"]==0) #0
 sum(data["Recovered"]==0) #0
 sum(data["Deceased"]==0) #0
 sum(data["Tested"]==0) #0
-count(data["Hospitalized"]==0) #2
+sum(data["Hospitalized"]==0) #2
 which(data["Hospitalized"]==0) #296,322
 data["Hospitalized"][which(data["Hospitalized"]==0),]=NA
 
@@ -38,6 +38,11 @@ ggplot(data, aes(x=Date, y=Hospitalized/1000)) + geom_line() + ylab("Hospitaliza
 smoothedH = lowess(data$Date, data$Hospitalized,f=1/16)$y
 ggplot(data, aes(x=Date, y=smoothedH/1000)) + geom_line() + ylab("Hospitalizations(thousands)") + ggtitle("Hospitalizations")
 
+
+
+#cumulative sum hospitalizations
+data$CumHosp = unlist(cumsum(data["Hospitalized"]))
+ggplot(data, aes(x=Date, y=CumHosp/1000)) + geom_line() + ylab("Hospitalizations(thousands)") + ggtitle("Cumulative Hospitalizations")
 
 View(data)
 #2020-11-08,221
