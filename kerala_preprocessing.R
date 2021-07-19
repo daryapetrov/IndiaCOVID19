@@ -34,15 +34,34 @@ ggplot(data, aes(x=Date, y=Hospitalized/1000)) + geom_line() + ylab("Hospitaliza
 data = impute_nearest_neighbors(data = data,row_name = "Hospitalized",index = 218)
 ggplot(data, aes(x=Date, y=Hospitalized/1000)) + geom_line() + ylab("Hospitalizations(thousands)") + ggtitle("Hospitalizations")
 
+
+#2020-11-08,221 high peak, wrong data input?
+data = impute_nearest_neighbors(data = data,row_name = "Hospitalized",index = 221)
+ggplot(data, aes(x=Date, y=Hospitalized/1000)) + geom_line() + ylab("Hospitalizations(thousands)") + ggtitle("Hospitalizations")
+
+
 #lowess
 smoothedH = lowess(data$Date, data$Hospitalized,f=1/16)$y
 ggplot(data, aes(x=Date, y=smoothedH/1000)) + geom_line() + ylab("Hospitalizations(thousands)") + ggtitle("Hospitalizations")
 
+#delta hospitalization
+deltaHospital = c(0,diff(data$Hospitalized))
+plot(deltaHospital,type="l")
+
+data = cbind(data, deltaHospital)
+ggplot(data, aes(x=Date, y=deltaHospital)) + geom_line() + ylab("Hospitalizations") + ggtitle("Hospitalizations")
+
 
 
 #cumulative sum hospitalizations
-data$CumHosp = unlist(cumsum(data["Hospitalized"]))
-ggplot(data, aes(x=Date, y=CumHosp/1000)) + geom_line() + ylab("Hospitalizations(thousands)") + ggtitle("Cumulative Hospitalizations")
+# data$CumHosp = unlist(cumsum(data["Hospitalized"]))
+# ggplot(data, aes(x=Date, y=CumHosp/1000)) + geom_line() + ylab("Hospitalizations(thousands)") + ggtitle("Cumulative Hospitalizations")
 
 View(data)
+
+
 #2020-11-08,221
+
+#delta hopsital
+#fix outliers
+#smoothing for pictorial purposes 
