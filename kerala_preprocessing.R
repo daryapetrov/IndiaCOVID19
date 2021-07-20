@@ -1,10 +1,9 @@
 #setwd("/Users/dpetrov/COVID-19-Nonparametric-Inference-master/code")
 library(ggplot2)
+library(VIM)
 
 load("kerala_df.Rda")
 data = kerala_df[,c("Date","State","Confirmed","Recovered","Deceased","Tested","Hospitalized")]
-
-#hospitalized not cumulative like confirmed, deceased, recovered
 
 sum(data["Date"]==0) #0
 sum(data["State"]==0) #0
@@ -30,6 +29,7 @@ ggplot(data, aes(x=Date, y=Hospitalized/1000)) + geom_line() + ylab("Hospitaliza
 smoothedH = lowess(data$Date, data$Hospitalized,f=1/32)$y
 ggplot(data, aes(x=Date, y=smoothedH/1000)) + geom_line() + ylab("Hospitalizations(thousands)") + ggtitle("Hospitalizations")
 
+#delta Hospital
 deltaHospital = c(0,diff(data$Hospitalized))
 smooth_deltaHospital = lowess(data$Date, deltaHospital,f=1/32)$y
 ggplot(data, aes(x=Date, y=smooth_deltaHospital)) + geom_line() + ylab("Change in Daily Hospitalizations") + ggtitle("Change in Daily Hospitalizations")
@@ -61,33 +61,33 @@ ggplot(data, aes(x=Date, y=smooth_deltaHospital)) + geom_line() + ylab("Change i
 # ggplot(data, aes(x=Date, y=Hospitalized/1000)) + geom_line() + ylab("Hospitalizations(thousands)") + ggtitle("Hospitalizations")
 
 
-#lowess
-smoothedH = lowess(data$Date, data$Hospitalized,f=1/32)$y
-ggplot(data, aes(x=Date, y=smoothedH/1000)) + geom_line() + ylab("Hospitalizations(thousands)") + ggtitle("Hospitalizations")
-
-#delta hospitalization
-deltaHospital = c(0,diff(data$Hospitalized))
-plot(deltaHospital,type="l")
-
-data = cbind(data, deltaHospital)
-ggplot(data, aes(x=Date, y=deltaHospital)) + geom_line() + ylab("Hospitalizations") + ggtitle("Hospitalizations")
-
-smoothed_deltaH = lowess(data$Date, data$smoothedH,f=1/32)$y
-ggplot(data, aes(x=Date, y=smoothed_deltaH)) + geom_line() + ylab("Hospitalizations(thousands)") + ggtitle("Hospitalizations")
-
-#what is going on? 
-m = c(0,diff(smoothedH))
-ggplot(data, aes(x=Date, y=m)) + geom_line() + ylab("Hospitalizations(thousands)") + ggtitle("Hospitalizations")
-
-data = cbind(data,c(0,diff(smoothedH)))
-data$smoothed_deltaH = diff(smoothedH)
-#cumulative sum hospitalizations
-# data$CumHosp = unlist(cumsum(data["Hospitalized"]))
-# ggplot(data, aes(x=Date, y=CumHosp/1000)) + geom_line() + ylab("Hospitalizations(thousands)") + ggtitle("Cumulative Hospitalizations")
-
-View(data)
-
-unlist(data["Hospitalized"][,])
+# #lowess
+# smoothedH = lowess(data$Date, data$Hospitalized,f=1/32)$y
+# ggplot(data, aes(x=Date, y=smoothedH/1000)) + geom_line() + ylab("Hospitalizations(thousands)") + ggtitle("Hospitalizations")
+# 
+# #delta hospitalization
+# deltaHospital = c(0,diff(data$Hospitalized))
+# plot(deltaHospital,type="l")
+# 
+# data = cbind(data, deltaHospital)
+# ggplot(data, aes(x=Date, y=deltaHospital)) + geom_line() + ylab("Hospitalizations") + ggtitle("Hospitalizations")
+# 
+# smoothed_deltaH = lowess(data$Date, data$smoothedH,f=1/32)$y
+# ggplot(data, aes(x=Date, y=smoothed_deltaH)) + geom_line() + ylab("Hospitalizations(thousands)") + ggtitle("Hospitalizations")
+# 
+# #what is going on? 
+# m = c(0,diff(smoothedH))
+# ggplot(data, aes(x=Date, y=m)) + geom_line() + ylab("Hospitalizations(thousands)") + ggtitle("Hospitalizations")
+# 
+# data = cbind(data,c(0,diff(smoothedH)))
+# data$smoothed_deltaH = diff(smoothedH)
+# #cumulative sum hospitalizations
+# # data$CumHosp = unlist(cumsum(data["Hospitalized"]))
+# # ggplot(data, aes(x=Date, y=CumHosp/1000)) + geom_line() + ylab("Hospitalizations(thousands)") + ggtitle("Cumulative Hospitalizations")
+# 
+# View(data)
+# 
+# unlist(data["Hospitalized"][,])
 
 
 #2020-11-08,221
