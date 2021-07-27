@@ -1,3 +1,8 @@
+##Tasks:
+#1. create new column for transformed data
+#2. graphs from the paper 
+#3. satarupa's code to fit the data
+
 #setwd("/Users/dpetrov/COVID-19-Nonparametric-Inference-master/code")
 library(ggplot2)
 library(VIM)
@@ -20,10 +25,16 @@ ggplot(data, aes(x=Date, y=Hospitalized/1000)) + geom_line() + ylab("Hospitaliza
 #2020-11-05, 218 wrong data input?
 #2020-11-08,221 high peak, wrong data input?
 data["Hospitalized"][c(218,221),] = NA
+ggplot(data, aes(x=Date, y=Hospitalized/1000)) + geom_line() + ylab("Hospitalizations(thousands)") + ggtitle("Hospitalizations")
 
-#impute 
+
+#impute from library VIM
+#imputedHospitalized = kNN(data, variable = "Hospitalized",k=6)
+#data = cbind(data,imputedHospitalized)
 data = kNN(data, variable = "Hospitalized",k=6)
 ggplot(data, aes(x=Date, y=Hospitalized/1000)) + geom_line() + ylab("Hospitalizations(thousands)") + ggtitle("Hospitalizations")
+
+#try sqrt(n)
 
 #lowess
 smoothedH = lowess(data$Date, data$Hospitalized,f=1/32)$y
@@ -31,8 +42,56 @@ ggplot(data, aes(x=Date, y=smoothedH/1000)) + geom_line() + ylab("Hospitalizatio
 
 #delta Hospital
 deltaHospital = c(0,diff(data$Hospitalized))
+ggplot(data, aes(x=Date, y=deltaHospital)) + geom_line() + ylab("Change in Daily Hospitalizations") + ggtitle("Change in Daily Hospitalizations")
 smooth_deltaHospital = lowess(data$Date, deltaHospital,f=1/32)$y
 ggplot(data, aes(x=Date, y=smooth_deltaHospital)) + geom_line() + ylab("Change in Daily Hospitalizations") + ggtitle("Change in Daily Hospitalizations")
+
+
+
+
+
+
+
+
+
+##smoothing hospital first, then doing delta. very blocky. 
+
+# data = cbind(data,smoothedH)
+# delta_smoothH = c(0,diff(smoothedH))
+# data = cbind(data,delta_smoothH)
+# 
+# 
+# 
+# #blocky
+# ggplot(data, aes(x=Date, y=delta_smoothH)) + geom_line() + ylab("Change in Daily Hospitalizations") + ggtitle("Change in Daily Hospitalizations")
+# #slightly smoother than smooth_deltaHospital
+# smooth_delta_smoothH = lowess(data$Date, delta_smoothH,f=1/32)$y
+# ggplot(data, aes(x=Date, y=smooth_delta_smoothH)) + geom_line() + ylab("Change in Daily Hospitalizations") + ggtitle("Change in Daily Hospitalizations")
+# 
+# plot(data$Hospitalized,type="l")
+# smoothedH = lowess(data$Date, data$Hospitalized,f=1/10)$y
+# 
+# plot(data$Date,smoothedH,type="l")
+# 
+# delta_smoothH = c(0,diff(smoothedH))
+# plot(data$Date,delta_smoothH,type="l")
+# 
+
+
+
+# smoothedH = lowess(data$Date, data$Hospitalized,f=1/10)$y
+# 
+# 
+# plot(delta_smoothH,type="l")
+# 
+# plot(lowess(delta_smoothH,f=1/32)$y,type="l")
+# plot(lowess(data$Date,delta_smoothH,f=1/32)$y,type="l")
+# plot(smoothedH)
+
+
+
+
+
 
 
 
