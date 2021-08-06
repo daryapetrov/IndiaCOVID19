@@ -1,5 +1,5 @@
 ##Tasks:
-#1. create new column for transformed data
+#1. create new column for transformed data (X)
 #2. graphs from the paper 
 #3. satarupa's code to fit the data
 
@@ -29,24 +29,40 @@ ggplot(data, aes(x=Date, y=Hospitalized/1000)) + geom_line() + ylab("Hospitaliza
 
 
 #impute from library VIM
-#imputedHospitalized = kNN(data, variable = "Hospitalized",k=6)
-#data = cbind(data,imputedHospitalized)
-data = kNN(data, variable = "Hospitalized",k=6)
-ggplot(data, aes(x=Date, y=Hospitalized/1000)) + geom_line() + ylab("Hospitalizations(thousands)") + ggtitle("Hospitalizations")
+data = cbind(data, kNN(data, variable = "Hospitalized",k=6)$Hospitalized)
+names(data)[names(data) == names(data)[8]] = "impHospitalized"
+ggplot(data, aes(x=Date, y=impHospitalized/1000)) + geom_line() + ylab("Hospitalizations(thousands)") + ggtitle("Hospitalizations")
 
-#try sqrt(n)
-
-#lowess
-smoothedH = lowess(data$Date, data$Hospitalized,f=1/32)$y
-ggplot(data, aes(x=Date, y=smoothedH/1000)) + geom_line() + ylab("Hospitalizations(thousands)") + ggtitle("Hospitalizations")
+#try sqrt(n) in lowess
+n= dim(data)[1]
+smoothed_impHospitalized = lowess(data$Date, data$impHospitalized,f=1/sqrt(n))$y
+ggplot(data, aes(x=Date, y=smoothed_impHospitalized/1000)) + geom_line() + ylab("Hospitalizations(thousands)") + ggtitle("Hospitalizations")
 
 #delta Hospital
-deltaHospital = c(0,diff(data$Hospitalized))
-ggplot(data, aes(x=Date, y=deltaHospital)) + geom_line() + ylab("Change in Daily Hospitalizations") + ggtitle("Change in Daily Hospitalizations")
-smooth_deltaHospital = lowess(data$Date, deltaHospital,f=1/32)$y
+delta_impHospitalized = c(0,diff(data$impHospitalized))
+ggplot(data, aes(x=Date, y=delta_impHospitalized)) + geom_line() + ylab("Change in Daily Hospitalizations") + ggtitle("Change in Daily Hospitalizations")
+smoothed_deltaHospital = lowess(data$Date, delta_impHospitalized,f=1/sqrt(n))$y
 ggplot(data, aes(x=Date, y=smooth_deltaHospital)) + geom_line() + ylab("Change in Daily Hospitalizations") + ggtitle("Change in Daily Hospitalizations")
+data = cbind(data,delta_impHospitalized )
+
+#CIR
+diff1 = diff(data$Confirmed)
+diff2 = diff(diff1)
+diff1_sm = lowess(diff1, f = 1/10)$y
+diff2_sm = lowess(diff2, f = 1/10)$y
+CIR = diff2_sm/diff1_sm[-1]
+plot(CIR, type = "l", main="bandwidth = 1/10")
+ggplot(data[1:362,], aes(x=Date, y=CIR)) + geom_line() + ylab("CIR")
 
 
+#CFR
+CFR = 100*data$Deceased/data$Confirmed
+data = cbind(data, CFR)
+
+plot(CFR,type="l", main="bandwidth = 1/17")
+CFR_lowess = lowess(CFR, f=1/20)$y
+plot(CFR_lowess,type="l", main="bandwidth = 1/17")
+ggplot(data[1:364,], aes(x=Date, y=CFR_lowess)) + geom_line() + ylab("CFR")
 
 
 
