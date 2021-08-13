@@ -3,7 +3,9 @@
 #2. graphs from the paper 
 #3. satarupa's code to fit the data
 
-#setwd("/Users/dpetrov/COVID-19-Nonparametric-Inference-master/code")
+#calculate means for mobility data by taking the average of the columns for each row 
+
+setwd("/Users/dpetrov/COVID-19-Nonparametric-Inference-master/India/Kerala")
 library(ggplot2)
 library(VIM)
 
@@ -42,7 +44,7 @@ ggplot(data, aes(x=Date, y=smoothed_impHospitalized/1000)) + geom_line() + ylab(
 delta_impHospitalized = c(0,diff(data$impHospitalized))
 ggplot(data, aes(x=Date, y=delta_impHospitalized)) + geom_line() + ylab("Change in Daily Hospitalizations") + ggtitle("Change in Daily Hospitalizations")
 smoothed_deltaHospital = lowess(data$Date, delta_impHospitalized,f=1/sqrt(n))$y
-ggplot(data, aes(x=Date, y=smooth_deltaHospital)) + geom_line() + ylab("Change in Daily Hospitalizations") + ggtitle("Change in Daily Hospitalizations")
+ggplot(data, aes(x=Date, y=smoothed_deltaHospital)) + geom_line() + ylab("Change in Daily Hospitalizations") + ggtitle("Change in Daily Hospitalizations")
 data = cbind(data,delta_impHospitalized )
 
 #CIR
