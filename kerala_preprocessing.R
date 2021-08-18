@@ -4,8 +4,8 @@
 #3. satarupa's code to fit the data
 
 #calculate means for mobility data by taking the average of the columns for each row 
-
-setwd("/Users/dpetrov/COVID-19-Nonparametric-Inference-master/India/Kerala")
+#
+setwd("/Users/dpetrov/COVID-19-Nonparametric-Inference-India/India/Kerala")
 library(ggplot2)
 library(VIM)
 
@@ -20,6 +20,7 @@ sum(data["Deceased"]==0) #0
 sum(data["Tested"]==0) #0
 sum(data["Hospitalized"]==0) #2
 which(data["Hospitalized"]==0) #296,322
+
 data["Hospitalized"][which(data["Hospitalized"]==0),]=NA
 
 ggplot(data, aes(x=Date, y=Hospitalized/1000)) + geom_line() + ylab("Hospitalizations(thousands)") + ggtitle("Hospitalizations")
@@ -47,6 +48,10 @@ smoothed_deltaHospital = lowess(data$Date, delta_impHospitalized,f=1/sqrt(n))$y
 ggplot(data, aes(x=Date, y=smoothed_deltaHospital)) + geom_line() + ylab("Change in Daily Hospitalizations") + ggtitle("Change in Daily Hospitalizations")
 data = cbind(data,delta_impHospitalized )
 
+
+save(data, file = "kerala_data.Rda")
+
+
 #CIR
 diff1 = diff(data$Confirmed)
 diff2 = diff(diff1)
@@ -65,9 +70,6 @@ plot(CFR,type="l", main="bandwidth = 1/17")
 CFR_lowess = lowess(CFR, f=1/20)$y
 plot(CFR_lowess,type="l", main="bandwidth = 1/17")
 ggplot(data[1:364,], aes(x=Date, y=CFR_lowess)) + geom_line() + ylab("CFR")
-
-
-
 
 
 
