@@ -1,3 +1,5 @@
+"hi"
+
 setwd("/Users/dpetrov/COVID-19-Nonparametric-Inference-India/India/Kerala")
 
 #2020
